@@ -1,5 +1,5 @@
 import sys
-from PyQt5 import QtGui
+from PyQt5 import QtGui, QtCore, QtWidgets
 from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox
 from PyQt5.QtGui import QPainter, QBrush, QPen, QMouseEvent, QPolygon, QPolygonF
 from PyQt5.QtCore import Qt
@@ -23,6 +23,8 @@ class MainPage(QMainWindow, Ui_MainWindow):
         self.pen = QtGui.QPen(QtCore.Qt.black,5)
         self.line_button.clicked.connect(self.criar_linha)
         self.triangle_button.clicked.connect(self.criar_triangulo)
+        self.zoomInButton.clicked.connect(self.zoom_in)
+        self.zoomOutButton.clicked.connect(self.zoom_out)
         
     def inicia_eixo(self):
         reta_x = QtCore.QLineF(QtCore.QPointF(-500,0), QtCore.QPointF(500,0))
@@ -60,8 +62,25 @@ class MainPage(QMainWindow, Ui_MainWindow):
         triangle.append(QtCore.QPointF(x3,y3))
         self.scene.addPolygon(triangle, self.pen,self.brush)
     
+    @QtCore.pyqtSlot()
     def zoom_in(self):
-        print()
+        print('zoom function')
+        scale_tr = QtGui.QTransform()
+        scale_tr.scale(1.5, 1.5)
+
+        tr = self.graphics.transform() * scale_tr
+        self.graphics.setTransform(tr)
+
+    @QtCore.pyqtSlot()
+    def zoom_out(self):
+        scale_tr = QtGui.QTransform()
+        scale_tr.scale(1.5, 1.5)
+
+        scale_inverted, invertible = scale_tr.inverted()
+
+        if invertible:
+            tr = self.graphics.transform() * scale_inverted
+            self.graphics.setTransform(tr)
 
     
 
